@@ -16,7 +16,7 @@ use App\Http\Controllers\OrderController;
 */
 
 Route::get('/', function () {
-    return view('products.index');
+    return redirect()->route('products.index');
 });
 
 Route::resource('products', ProductController::class);

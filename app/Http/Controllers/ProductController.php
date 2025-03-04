@@ -4,18 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Http\Requests\ProductRequest;
+use App\Repositories\ProductRepository;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    protected $productRepository;
+
+    public function __construct(ProductRepository $productRepository)
+    {
+        $this->productRepository = $productRepository;
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category')->get();
+        $products = $this->productRepository->getAllPaginated();
         return view('products.index', compact('products'));
     }
 
@@ -36,17 +45,11 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'category_id' => 'required|exists:categories,id',
-        ]);
-
-        Product::create($request->all());
-        return redirect()->route('products.index')->with('success', 'Продукт успешно создан');
+        $this->productRepository->create($request->validated());
+        return redirect()->route('products.index')
+            ->with('success', 'Продукт успешно создан');
     }
 
     /**
@@ -57,7 +60,10 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::find($id);
+        $product = $this->productRepository->findById($id);
+        if (!$product) {
+            abort(404);
+        }
         return view('products.show', compact('product'));
     }
 
@@ -69,8 +75,11 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
+        $product = $this->productRepository->findById($id);
+        if (!$product) {
+            abort(404);
+        }
         $categories = Category::all();
-        $product = Product::find($id);
         return view('products.edit', compact('product', 'categories'));
     }
 
@@ -81,17 +90,16 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ProductRequest $request, $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'category_id' => 'required|exists:categories,id',
-        ]);
-        $product = Product::find($id);
-        $product->update($request->all());
-        return redirect()->route('products.index')->with('success', 'Продукт успешно обновлен');
+        $product = $this->productRepository->findById($id);
+        if (!$product) {
+            abort(404);
+        }
+        
+        $this->productRepository->update($product, $request->validated());
+        return redirect()->route('products.index')
+            ->with('success', 'Продукт успешно обновлен');
     }
 
     /**
@@ -102,8 +110,13 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        $product = Product::find($id);
-        $product->delete();
-        return redirect()->route('products.index')->with('success', 'Продукт успешно удален');
+        $product = $this->productRepository->findById($id);
+        if (!$product) {
+            abort(404);
+        }
+        
+        $this->productRepository->delete($product);
+        return redirect()->route('products.index')
+            ->with('success', 'Продукт успешно удален');
     }
 }

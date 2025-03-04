@@ -40,4 +40,13 @@
             </tbody>
         </table>
     </div>
+
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="text-muted">
+            Показано {{ $products->firstItem() ?? 0 }} - {{ $products->lastItem() ?? 0 }} из {{ $products->total() }} продуктов
+        </div>
+        <div>
+            {{ $products->links() }}
+        </div>
+    </div>
 @endsection
