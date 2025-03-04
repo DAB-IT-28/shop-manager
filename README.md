@@ -1,3 +1,58 @@
+# Управление магазином
+
+Система управления товарами и заказами на Laravel 9.x
+
+## Требования
+
+- PHP >= 8.0
+- Laravel 9.x
+- Composer
+- MySQL >= 5.7
+- Node.js и NPM
+
+## Установка
+
+1. Клонируйте репозиторий:
+```bash
+git clone [url-репозитория]
+cd shop_manager
+```
+
+2. Установите зависимости PHP:
+```bash
+composer install
+```
+
+3. Настройте окружение:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+4. Настройте подключение к базе данных в файле `.env`
+
+5. Выполните миграции и заполните базу данных:
+```bash
+php artisan migrate
+php artisan db:seed
+```
+
+## Основные функции
+
+- Управление товарами (создание, редактирование, удаление)
+- Категории товаров
+- Управление заказами
+- Пагинация (15 товаров на страницу)
+- Валидация форм
+
+## Структура проекта
+
+- `app/Http/Controllers` - контроллеры
+- `app/Models` - модели
+- `app/Repositories` - репозитории
+- `app/Http/Requests` - классы валидации форм
+- `resources/views` - шаблоны Blade
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
 <p align="center">
